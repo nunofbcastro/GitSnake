@@ -51,9 +51,6 @@ function App() {
   return (
     <div className="App">
       <SnakeGame days={days} username={username} />
-      <div className="footer">
-        <p>Tip: Add <code>?user=YOUR_USERNAME</code> to the URL to play with your graph!</p>
-      </div>
     </div>
   )
 }

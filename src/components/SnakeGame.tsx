@@ -19,12 +19,14 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ days, username }) => {
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [isPaused, setIsPaused] = useState(true);
+  const [eatenCells, setEatenCells] = useState<Set<string>>(new Set());
   
   const nextDirection = useRef<Point>({ x: 1, y: 0 });
 
   // Initialize grid from contribution days
   useEffect(() => {
     const newGrid = Array(GRID_HEIGHT).fill(0).map(() => Array(GRID_WIDTH).fill(0));
+    const initialEaten = new Set<string>();
     
     days.forEach((day, index) => {
       const col = Math.floor(index / 7);
@@ -34,16 +36,18 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ days, username }) => {
       }
     });
     
-    // Clear initial snake positions
+    // Clear initial snake positions and mark them as eaten if they had value
     const initialSnake = [{ x: 2, y: 3 }, { x: 1, y: 3 }, { x: 0, y: 3 }];
     initialSnake.forEach(p => {
-      if (newGrid[p.y] && newGrid[p.y][p.x] !== undefined) {
+      if (newGrid[p.y] && newGrid[p.y][p.x] > 0) {
+        initialEaten.add(`${p.x}-${p.y}`);
         newGrid[p.y][p.x] = 0;
       }
     });
     
     setGrid(newGrid);
     setSnake(initialSnake);
+    setEatenCells(initialEaten);
   }, [days]);
 
   const gridRef = useRef<number[][]>([]);
@@ -109,6 +113,7 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ days, username }) => {
       if (cellValue > 0) {
         // Eat contribution
         setScore(prev => prev + (cellValue * 10));
+        setEatenCells(prev => new Set(prev).add(`${newHead.x}-${newHead.y}`));
         setGrid(prevGrid => {
           const updatedGrid = [...prevGrid];
           updatedGrid[newHead.y] = [...updatedGrid[newHead.y]];
@@ -122,7 +127,7 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ days, username }) => {
 
       return newSnake;
     });
-  }, [gameOver, isPaused]); // Removed grid as dependency to avoid interval stutter
+  }, [gameOver, isPaused]);
 
   useEffect(() => {
     const gameLoop = setInterval(moveSnake, 130);
@@ -136,6 +141,7 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ days, username }) => {
     setGameOver(false);
     setScore(0);
     setIsPaused(false);
+    setEatenCells(new Set());
     
     // Reset grid
     const newGrid = Array(GRID_HEIGHT).fill(0).map(() => Array(GRID_WIDTH).fill(0));
@@ -164,11 +170,12 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ days, username }) => {
           row.map((level, x) => {
             const isSnakeHead = snake[0].x === x && snake[0].y === y;
             const isSnakeBody = snake.slice(1).some(s => s.x === x && s.y === y);
+            const isEaten = eatenCells.has(`${x}-${y}`);
             
             return (
               <div 
                 key={`${x}-${y}`} 
-                className={`cell level-${level} ${isSnakeHead ? 'snake-head' : ''} ${isSnakeBody ? 'snake-body' : ''}`}
+                className={`cell level-${level} ${isEaten ? 'level-0-eaten' : ''} ${isSnakeHead ? 'snake-head' : ''} ${isSnakeBody ? 'snake-body' : ''}`}
               />
             );
           })
