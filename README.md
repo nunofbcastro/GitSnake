@@ -11,15 +11,25 @@ A playable Snake game where the levels are generated from your GitHub contributi
 3.  **Objective**: Eat the green squares. The darker the green, the more points you get!
 4.  **Custom User**: Add `?user=GITHUB_USERNAME` to the URL to play with anyone's contribution graph.
 
-## 🖼️ Embed in your Profile README
+## 🕹️ Play Now!
 
-You can add this game directly to your GitHub profile or any website using an `iframe`:
+Since GitHub READMEs don't support interactive games directly, click the image below to play with your own contribution graph:
+
+[![Play GitSnake](https://img.shields.io/badge/PLAY-GitSnake-2ea44f?style=for-the-badge&logo=github)](https://nunofbcastro.github.io/GitSnake/?user=nunobcastro)
+
+*(Or click the grid below)*
+
+[<img src="https://raw.githubusercontent.com/nunofbcastro/GitSnake/main/public/favicon.svg" width="100%" alt="Play GitSnake" />](https://nunofbcastro.github.io/GitSnake/?user=nunobcastro)
+
+## 🖼️ Embed on your own Website
+
+If you are using this on a personal website (not GitHub), you can use this `iframe`:
 
 ```html
-<iFrame 
-  src="https://your-username.github.io/snake/?user=your-username" 
+<iframe 
+  src="https://nunofbcastro.github.io/GitSnake/?user=your-username" 
   width="100%" 
-  height="350" 
+  height="300" 
   frameborder="0"
 ></iframe>
 ```
