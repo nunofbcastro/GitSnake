@@ -70,12 +70,13 @@ button:hover {
 }
 
 .cell {
-  width: 10px;
-  height: 10px;
+  width: 100%;
+  height: 100%;
   border-radius: 2px;
+  transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-.level-0 { background-color: var(--color-calendar-graph-day-bg); }
+.level-0 { background-color: transparent; }
 .level-1 { background-color: var(--color-calendar-graph-day-L1-bg); }
 .level-2 { background-color: var(--color-calendar-graph-day-L2-bg); }
 .level-3 { background-color: var(--color-calendar-graph-day-L3-bg); }

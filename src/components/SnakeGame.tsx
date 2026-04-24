@@ -26,8 +26,6 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ days, username }) => {
   useEffect(() => {
     const newGrid = Array(GRID_HEIGHT).fill(0).map(() => Array(GRID_WIDTH).fill(0));
     
-    // GitHub days are usually chronological. We need to map them to the 53x7 grid.
-    // GitHub's layout is column-first (Top-to-bottom, then Left-to-right).
     days.forEach((day, index) => {
       const col = Math.floor(index / 7);
       const row = index % 7;
@@ -36,8 +34,22 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ days, username }) => {
       }
     });
     
+    // Clear initial snake positions
+    const initialSnake = [{ x: 2, y: 3 }, { x: 1, y: 3 }, { x: 0, y: 3 }];
+    initialSnake.forEach(p => {
+      if (newGrid[p.y] && newGrid[p.y][p.x] !== undefined) {
+        newGrid[p.y][p.x] = 0;
+      }
+    });
+    
     setGrid(newGrid);
+    setSnake(initialSnake);
   }, [days]);
+
+  const gridRef = useRef<number[][]>([]);
+  useEffect(() => {
+    gridRef.current = grid;
+  }, [grid]);
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     switch (e.key) {
@@ -90,16 +102,19 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ days, username }) => {
         return prevSnake;
       }
 
+      const currentGrid = gridRef.current;
+      const cellValue = currentGrid[newHead.y][newHead.x];
       const newSnake = [newHead, ...prevSnake];
-      const cellValue = grid[newHead.y][newHead.x];
 
       if (cellValue > 0) {
         // Eat contribution
         setScore(prev => prev + (cellValue * 10));
-        const updatedGrid = [...grid];
-        updatedGrid[newHead.y] = [...updatedGrid[newHead.y]];
-        updatedGrid[newHead.y][newHead.x] = 0;
-        setGrid(updatedGrid);
+        setGrid(prevGrid => {
+          const updatedGrid = [...prevGrid];
+          updatedGrid[newHead.y] = [...updatedGrid[newHead.y]];
+          updatedGrid[newHead.y][newHead.x] = 0;
+          return updatedGrid;
+        });
         // Snake grows: don't pop the tail
       } else {
         newSnake.pop();
@@ -107,10 +122,10 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ days, username }) => {
 
       return newSnake;
     });
-  }, [gameOver, isPaused, grid]);
+  }, [gameOver, isPaused]); // Removed grid as dependency to avoid interval stutter
 
   useEffect(() => {
-    const gameLoop = setInterval(moveSnake, 150);
+    const gameLoop = setInterval(moveSnake, 130);
     return () => clearInterval(gameLoop);
   }, [moveSnake]);
 
