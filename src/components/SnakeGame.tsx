@@ -12,17 +12,14 @@ type Point = { x: number; y: number };
 const GRID_WIDTH = 53;
 const GRID_HEIGHT = 7;
 const INITIAL_SPEED = 200;
-const MIN_SPEED = 80;
 
 export const SnakeGame: React.FC<SnakeGameProps> = ({ days, username }) => {
   const [grid, setGrid] = useState<number[][]>([]);
   const [snake, setSnake] = useState<Point[]>([{ x: 2, y: 3 }, { x: 1, y: 3 }, { x: 0, y: 3 }]);
-  const [direction, setDirection] = useState<Point>({ x: 1, y: 0 });
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [isPaused, setIsPaused] = useState(true);
   const [eatenCells, setEatenCells] = useState<Set<string>>(new Set());
-  const [speed, setSpeed] = useState(INITIAL_SPEED);
   
   const nextDirection = useRef<Point>({ x: 1, y: 0 });
 
@@ -99,8 +96,6 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ days, username }) => {
   const moveSnake = useCallback(() => {
     if (gameOver || isPaused) return;
 
-    setDirection(nextDirection.current);
-    
     setSnake(prevSnake => {
       const head = prevSnake[0];
       const newHead = {
@@ -143,7 +138,7 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ days, username }) => {
     });
   }, [gameOver, isPaused]);
 
-  // Use dynamic interval based on speed with robust setTimeout to prevent burst-firing
+  // Use a setTimeout loop to avoid interval burst-firing
   useEffect(() => {
     if (gameOver || isPaused) return;
     
@@ -159,11 +154,9 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ days, username }) => {
 
   const resetGame = () => {
     setSnake([{ x: 2, y: 3 }, { x: 1, y: 3 }, { x: 0, y: 3 }]);
-    setDirection({ x: 1, y: 0 });
     nextDirection.current = { x: 1, y: 0 };
     setGameOver(false);
     setScore(0);
-    setSpeed(INITIAL_SPEED);
     setIsPaused(false);
     setEatenCells(new Set());
     
