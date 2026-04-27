@@ -21,10 +21,22 @@ export async function fetchGithubContributions(username: string): Promise<Contri
     if (data && data.contributions) {
       data.contributions.forEach((week: any) => {
         week.forEach((day: any) => {
+          // Ensure level is a number between 0 and 4
+          let level = parseInt(day.level);
+          if (isNaN(level)) {
+            // Fallback: calculate level from count if level is missing
+            const count = day.count || 0;
+            if (count === 0) level = 0;
+            else if (count < 3) level = 1;
+            else if (count < 6) level = 2;
+            else if (count < 9) level = 3;
+            else level = 4;
+          }
+          
           days.push({
             date: day.date,
-            level: day.level,
-            count: day.count,
+            level: level,
+            count: day.count || 0,
           });
         });
       });

@@ -36,14 +36,20 @@ function App() {
   }, [])
 
   if (loading) {
-    return <div className="loading">Loading contributions for {username}...</div>
+    return (
+      <div className="loading-container">
+        <div className="spinner"></div>
+        <h2>Loading contributions for {username}...</h2>
+      </div>
+    )
   }
 
   if (error) {
     return (
-      <div className="error">
+      <div className="error-container">
+        <h2 className="error-text">Oops!</h2>
         <p>{error}</p>
-        <button onClick={() => window.location.reload()}>Try Again</button>
+        <button className="retry-btn" onClick={() => window.location.reload()}>Try Again</button>
       </div>
     )
   }
